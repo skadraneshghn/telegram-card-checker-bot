@@ -23,7 +23,8 @@ from gates.odali import odali
 from gates.pepe import pepe
 from gates.piccolo import piccolo
 from gates.pp import pp_gate
-from gates.pp1 import pp_gate1
+from gates.pp1 import pp_gate as pp_gate1
+
 from gates.rohee import rohee
 from gates.sebas import sebas
 from gates.sexo import sexo
