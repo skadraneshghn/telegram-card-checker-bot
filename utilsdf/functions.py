@@ -190,7 +190,16 @@ def antispam(user: int, limit: int, free_user=False, times: dict = times) -> boo
         limit, int
     ), "Both arguments must be integers"
 
+    from utilsdf.db import Database
+    try:
+        with Database() as db:
+            if db.is_seller_or_admin(user):
+                return False
+    except Exception:
+        pass
+
     now = time()
+
 
     user_info = times.get(user, {"last": 0, "checks": 0})
 

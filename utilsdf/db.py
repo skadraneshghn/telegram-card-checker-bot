@@ -85,6 +85,8 @@ class Database:
         return expiration_time
 
     def is_premium(self, user_id: int) -> bool:
+        if str(user_id) == str(self.ID_OWNER) or self.is_seller_or_admin(user_id):
+            return True
         user_data = self.cursor.execute(
             f"SELECT MEMBERSHIP FROM {self.BOT_TABLE} WHERE ID=?", (user_id,)
         ).fetchone()
@@ -195,13 +197,15 @@ class Database:
         return str(user_data[0]).lower() == rank if user_data else False
 
     def is_admin(self, user_id: int) -> bool:
+        if str(user_id) == str(self.ID_OWNER):
+            return True
         return self.__is_rank(user_id, "admin")
 
     def is_seller(self, user_id: int) -> bool:
         return self.__is_rank(user_id, "seller")
 
     def is_seller_or_admin(self, user_id) -> bool:
-        if self.is_admin(user_id) or self.is_seller(user_id):
+        if str(user_id) == str(self.ID_OWNER) or self.is_admin(user_id) or self.is_seller(user_id):
             return True
         return False
 
