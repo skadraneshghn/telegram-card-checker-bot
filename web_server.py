@@ -5,6 +5,11 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 
 start_time = time.time()
+config_error_message = None
+
+def set_config_error(msg):
+    global config_error_message
+    config_error_message = msg
 
 def get_uptime():
     seconds = int(time.time() - start_time)
@@ -32,7 +37,8 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
-            response = '{"status":"ok","bot":"running","uptime":"' + get_uptime() + '"}'
+            status_text = "error" if config_error_message else "ok"
+            response = f'{{"status":"{status_text}","bot":"running","uptime":"{get_uptime()}"}}'
             self.wfile.write(response.encode('utf-8'))
         else:
             self.send_response(200)
@@ -41,6 +47,26 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
             
             uptime_str = get_uptime()
             port_val = os.getenv("PORT", "8080")
+            
+            if config_error_message:
+                badge_html = f"""
+                <div class="badge warning">
+                    <span class="pulse warning-pulse"></span>
+                    <span>MISSING CONFIGURATION</span>
+                </div>
+                <div class="alert-box">
+                    <strong>Action Required in Clever Cloud:</strong><br>
+                    {config_error_message}
+                </div>
+                """
+            else:
+                badge_html = """
+                <div class="badge">
+                    <span class="pulse"></span>
+                    <span>SYSTEM ONLINE</span>
+                </div>
+                """
+
             html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,7 +114,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
             border-radius: 24px;
             padding: 40px;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             text-align: center;
         }}
@@ -119,7 +145,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         p.subtitle {{
             font-size: 0.9rem;
             color: #9ca3af;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }}
         .badge {{
             display: inline-flex;
@@ -132,7 +158,12 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
             border-radius: 9999px;
             font-size: 0.875rem;
             font-weight: 600;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
+        }}
+        .badge.warning {{
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
         }}
         .pulse {{
             width: 10px;
@@ -142,16 +173,30 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
             box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
             animation: pulse-animation 2s infinite;
         }}
+        .pulse.warning-pulse {{
+            background-color: #f59e0b;
+            animation: pulse-warning-animation 2s infinite;
+        }}
         @keyframes pulse-animation {{
-            0% {{
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-            }}
-            70% {{
-                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
-            }}
-            100% {{
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-            }}
+            0% {{ box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }}
+            70% {{ box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }}
+            100% {{ box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }}
+        }}
+        @keyframes pulse-warning-animation {{
+            0% {{ box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }}
+            70% {{ box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }}
+            100% {{ box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }}
+        }}
+        .alert-box {{
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.85rem;
+            color: #fbbf24;
+            margin-bottom: 24px;
+            text-align: left;
+            line-height: 1.5;
         }}
         .stats-grid {{
             display: grid;
@@ -195,10 +240,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         <h1>Telegram Bot</h1>
         <p class="subtitle">Clever Cloud Container Status</p>
         
-        <div class="badge">
-            <span class="pulse"></span>
-            <span>SYSTEM ONLINE</span>
-        </div>
+        {badge_html}
         
         <div class="stats-grid">
             <div class="stat-item">
@@ -220,7 +262,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         </div>
         
         <div class="footer">
-            Bot is running 24/7 on Pyrogram &amp; Clever Cloud
+            Bot container running 24/7 on Clever Cloud
         </div>
     </div>
 </body>

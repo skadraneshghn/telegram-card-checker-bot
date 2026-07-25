@@ -1,5 +1,52 @@
+import os
+import time
 import logging
 from os import getenv
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+# Start HTTP health check server FIRST on port 8080 for Clever Cloud
+from web_server import start_web_server, set_config_error
+start_web_server()
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("httpx").setLevel(logging.CRITICAL)
+
+# Validate credentials safely to prevent startup crash on missing/placeholder env vars
+raw_api_id = getenv('TELEGRAM_API_ID', '').strip()
+raw_api_hash = getenv('TELEGRAM_API_HASH', '').strip()
+raw_bot_token = getenv('TELEGRAM_BOT_TOKEN', '').strip()
+CHANNEL_LOGS = getenv('TELEGRAM_CHANNEL_LOGS', '')
+
+missing_fields = []
+
+if not raw_api_id or raw_api_id == 'YOUR_API_ID' or not raw_api_id.isdigit():
+    missing_fields.append("TELEGRAM_API_ID")
+    API_ID = 0
+else:
+    API_ID = int(raw_api_id)
+
+if not raw_api_hash or raw_api_hash == 'YOUR_API_HASH':
+    missing_fields.append("TELEGRAM_API_HASH")
+
+if not raw_bot_token or raw_bot_token == 'YOUR_BOT_TOKEN':
+    missing_fields.append("TELEGRAM_BOT_TOKEN")
+
+if missing_fields:
+    err_msg = f"Missing or invalid environment variables: {', '.join(missing_fields)}. Please configure them in your Clever Cloud Environment Variables dashboard."
+    logging.warning("=" * 60)
+    logging.warning("⚠️  " + err_msg)
+    logging.warning("Web health check server on port 8080 will stay alive so Clever Cloud deployment succeeds.")
+    logging.warning("=" * 60)
+    set_config_error(err_msg)
+    # Sleep to keep web server alive for Clever Cloud health check probe
+    while True:
+        time.sleep(10)
+
 from huepy import bad
 from pyromod import Client
 from pyrogram import filters
@@ -9,27 +56,16 @@ from utilsdf.functions import bot_on
 from utilsdf.db import Database
 from utilsdf.vars import PREFIXES
 
-# TODO: Replace with your credentials or use environment variables
-# Get your API credentials from https://my.telegram.org
-# Get your bot token from @BotFather on Telegram
-API_ID = getenv('TELEGRAM_API_ID', 'YOUR_API_ID')
-API_HASH = getenv('TELEGRAM_API_HASH', 'YOUR_API_HASH')
-BOT_TOKEN = getenv('TELEGRAM_BOT_TOKEN', 'YOUR_BOT_TOKEN')
-CHANNEL_LOGS = getenv('TELEGRAM_CHANNEL_LOGS', 'YOUR_CHANNEL_ID')
-
 app = Client(
     "bot",
     api_id=API_ID,
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN,
+    api_hash=raw_api_hash,
+    bot_token=raw_bot_token,
     plugins=dict(root="plugins"),
     parse_mode=ParseMode.HTML,
 )
 
 bot_on()
-logging.basicConfig(level=logging.INFO)
-logging.getLogger("httpx").setLevel(logging.CRITICAL)
-
 
 @app.on_callback_query()
 async def warn_user(client: Client, callback_query: CallbackQuery):
@@ -71,15 +107,9 @@ async def user_ban(client: Client, m: Message):
                 if db.user_has_credits(user_id):
                     continue
                 await m.chat.ban_member(user_id)
-                info=db.get_info_user(user_id)
+                info = db.get_info_user(user_id)
                 await client.send_message(-1001494650944, f"<b>User eliminado: @{info['USERNAME']}</b>")
 
-        #         if not db.is_admin(m.from_user.id):
-        #             return await m.reply(
-        #                 """𝘽𝙤𝙩 𝙪𝙣𝙙𝙚𝙧 𝙈𝙖𝙣𝙩𝙚𝙣𝙞𝙚𝙣𝙘𝙚 ⚠️
-        # 𝙍𝙚𝙖𝙨𝙤𝙣 -» <code>Mantenimiento by @Fucker_504</code>
-        #        """
-        #             )
         user_id = m.from_user.id
         username = m.from_user.username
         db.remove_expireds_users()
@@ -90,9 +120,5 @@ async def user_ban(client: Client, m: Message):
         await m.continue_propagation()
 
 
-from web_server import start_web_server
-
 if __name__ == "__main__":
-    start_web_server()
     app.run()
-
