@@ -101,6 +101,10 @@ text_gates_auth_2 = f"""
 {symbol("🔹 𝙋𝙞𝙘𝙘𝙤𝙡𝙤")} -» <code>Shopify -» Auth</code>
 دستور: <code>.pi</code> -» <code>ویژه</code>
 وضعیت: <code>فعال ✅</code>
+
+{symbol("🔹 𝘼𝙪𝙩𝙤 𝙎𝙝𝙤𝙥𝙞𝙛𝙮")} -» <code>Shopify -» Auto Checkout</code>
+دستور: <code>.autosh / .sh</code> -» <code>ویژه</code>
+وضعیت: <code>فعال ✅</code>
 """
 
 buttons_auth_page_2 = InlineKeyboardMarkup(
