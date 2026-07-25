@@ -52,11 +52,12 @@ async def autoshopify(
         raise TypeError("'month' must be an instance of 'str'")
     if not isinstance(year, str):
         raise TypeError("'year' must be an instance of 'str'")
-    if not isinstance(cvv, str):
-        raise TypeError("'cvv' must be an instance of 'str'")
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "https://" + url
     result = url_validator(url)
     if not result:
         raise ValueError("Invalid URL")
+
     attempts = 0
     while True:
         async with AsyncClient(
