@@ -14,10 +14,11 @@ try:
 except ImportError:
     pass
 
+from utilsdf.logger import logger
 from web_server import start_web_server, set_config_error
 
-logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.CRITICAL)
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 # Validate credentials safely
 raw_api_id = getenv('TELEGRAM_API_ID', '').strip()
@@ -112,17 +113,19 @@ async def user_ban(client: Client, m: Message):
 
 
 if __name__ == "__main__":
+    logger.info("Initializing Telegram Card Checker Bot...")
     start_web_server()
 
     if missing_fields:
         err_msg = f"Missing or invalid environment variables: {', '.join(missing_fields)}. Please configure them in your Clever Cloud Environment Variables dashboard."
-        logging.warning("=" * 60)
-        logging.warning("⚠️  " + err_msg)
-        logging.warning("Web health check server on port 8080 will stay alive so Clever Cloud deployment succeeds.")
-        logging.warning("=" * 60)
+        logger.warning("=" * 60)
+        logger.warning("⚠️  " + err_msg)
+        logger.warning("Web health check server on port 8080 will stay alive so Clever Cloud deployment succeeds.")
+        logger.warning("=" * 60)
         set_config_error(err_msg)
         while True:
             time.sleep(10)
     else:
         bot_on()
+        logger.info("Starting Pyrogram bot client and listening for Telegram updates...")
         app.run()

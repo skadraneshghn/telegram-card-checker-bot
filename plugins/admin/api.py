@@ -6,7 +6,7 @@ from pyromod import Client
 from pyrogram.types import Message
 from utilsdf.db import Database
 from utilsdf.vars import PREFIXES
-from utilsdf.functions import antispam, random_proxy
+from utilsdf.functions import antispam, random_proxy, url_validator
 
 
 @Client.on_message(filters.command("api", PREFIXES))

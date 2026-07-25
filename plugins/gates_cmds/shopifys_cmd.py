@@ -47,10 +47,14 @@ def is_shopify_gate_cmd(_, __, m: Message):
 shopify_cmd_filter = filters.create(is_shopify_gate_cmd)
 
 
+from utilsdf.logger import logger
+
 @Client.on_message(shopify_cmd_filter)
 async def shopifys(client: Client, m: Message):
     user_id = m.from_user.id
     cmd = m.command[0].lower()
+    logger.info(f"User [{user_id}] (@{m.from_user.username}) executed gate command: /{cmd}")
+
     gateway = get_gate_by_cmd(cmd)
     if not gateway:
         return
@@ -105,7 +109,11 @@ async def shopifys(client: Client, m: Message):
     if isinstance(result, Exception):
         e = result
         traceback.print_exception(type(e), e, e.__traceback__)
-        return await msg_to_edit.edit(f"<b>Error! (<code>{type(e).__name__}: {str(e)[:100]}</code>)</b>")
+        err_msg = f"<b>Error! (<code>{type(e).__name__}: {str(e)[:100]}</code>)</b>"
+        if msg_to_edit.text != err_msg:
+            return await msg_to_edit.edit(err_msg)
+        return
+
 
 
     result = (

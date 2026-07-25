@@ -1,7 +1,7 @@
 import json
 from random import randint, choice
 from string import ascii_letters
-from utilsdf.functions import random_email, capture, random_proxy, random_proxy_sh
+from utilsdf.functions import random_email, capture, random_proxy, random_proxy_sh, url_validator
 from httpx import AsyncClient, Response, RemoteProtocolError, ProxyError, ReadTimeout
 from urllib.parse import urlparse
 from asyncio import sleep

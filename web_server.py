@@ -271,6 +271,8 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
 </html>"""
             self.wfile.write(html.encode('utf-8'))
 
+from utilsdf.logger import logger
+
 def start_web_server():
     global _server_instance, _server_thread
     if _server_instance is not None:
@@ -283,18 +285,18 @@ def start_web_server():
         thread.start()
         _server_instance = server
         _server_thread = thread
-        logging.info(f"Web health check server started on 0.0.0.0:{port}")
+        logger.info(f"Web health check server started successfully on 0.0.0.0:{port}")
         return server
     except OSError as e:
-        logging.warning(f"Web health check server already bound or error: {e}")
+        logger.warning(f"Web health check server port binding note: {e}")
         return _server_instance
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
     srv = start_web_server()
-    print(f"Server listening on port {os.getenv('PORT', 8080)}... Press Ctrl+C to stop.")
+    logger.info(f"Standalone server listening on port {os.getenv('PORT', 8080)}... Press Ctrl+C to stop.")
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("Stopping server.")
+        logger.info("Stopping standalone server.")
+

@@ -10,6 +10,12 @@ from time import time
 from pyromod import Client, Message
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+def url_validator(url: str) -> bool:
+    if not isinstance(url, str):
+        return False
+    url = url.strip()
+    return url.startswith("http://") or url.startswith("https://")
+
 Languages = {
     "ENGLISH": "en",
     "SPANISH": "es",
@@ -19,6 +25,7 @@ Languages = {
     "GERMAN": "de",
     "JAPANESE": "ja",
 }
+
 
 times = {}
 users_info = {}

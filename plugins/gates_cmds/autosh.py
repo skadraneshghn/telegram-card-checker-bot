@@ -15,9 +15,13 @@ from utilsdf.vars import PREFIXES
 from gates.autosh import autoshopify
 
 
+from utilsdf.logger import logger
+
 @Client.on_message(filters.command(["autosh", "sh", "shopify"], PREFIXES))
 async def autosh_cmd(client: Client, m: Message):
     user_id = m.from_user.id
+    logger.info(f"User [{user_id}] (@{m.from_user.username}) executed /autosh command")
+
     
     with Database() as db:
         is_premium = db.is_premium(user_id)
@@ -71,11 +75,17 @@ async def autosh_cmd(client: Client, m: Message):
         response = await autoshopify(site, cc, mes, ano, cvv, is_premium, credits)
     except Exception as e:
         traceback.print_exc()
-        return await msg_to_edit.edit(f"<b>خطا در پردازش درگاه! (<code>{type(e).__name__}: {str(e)[:100]}</code>)</b>")
-
+        err_msg = f"<b>خطا در پردازش درگاه! (<code>{type(e).__name__}: {str(e)[:100]}</code>)</b>"
+        if msg_to_edit.text != err_msg:
+            return await msg_to_edit.edit(err_msg)
+        return
 
     if not response or not isinstance(response, dict):
-        return await msg_to_edit.edit("<b>پاسخی از درگاه دریافت نشد!</b>")
+        err_msg = "<b>پاسخی از درگاه دریافت نشد!</b>"
+        if msg_to_edit.text != err_msg:
+            return await msg_to_edit.edit(err_msg)
+        return
+
 
     response_gate = response.get("response", "نامشخص")
     status = response.get("status", "نامشخص")
