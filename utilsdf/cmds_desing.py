@@ -25,11 +25,15 @@ buttons_gates = InlineKeyboardMarkup(
             InlineKeyboardButton("احراز هویت (Auth)", "auths"),
             InlineKeyboardButton("شارژی (Charged)", "chargeds"),
         ],
-        [InlineKeyboardButton("ویژه (Special)", "specials")],
-        [InlineKeyboardButton("بازگشت 🔄", "home")],
+        [
+            InlineKeyboardButton("ویژه (Special)", "specials"),
+            InlineKeyboardButton("ابزارها 🛠", "tools"),
+        ],
+        [InlineKeyboardButton("صفحه اصلی 🏠", "home")],
         [exit_button],
     ]
 )
+
 
 
 # RETURN & EXIT GATES
