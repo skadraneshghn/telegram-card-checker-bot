@@ -147,7 +147,9 @@ async def pussy(cc, month, year, cvv):
             json=post8,
         )
         tok = capture(r8.text, '"token":"', '"')
-        brand_ = capture(r8.text, '"brandCode":"', '"').lower()
+        brand_raw = capture(r8.text, '"brandCode":"', '"')
+        brand_ = brand_raw.lower() if brand_raw else ""
+
 
         head9 = {
             "Host": f"{url}",

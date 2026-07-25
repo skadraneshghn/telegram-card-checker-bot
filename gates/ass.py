@@ -184,7 +184,10 @@ async def ass(cc, month, year, cvv):
             json=post9,
         )
         re_ = capture(r9.text, '"CardinalJWT":"', '"')
+        if not re_ or "." not in re_:
+            return "Declined ❌", "Cardinal Commerce Init Failed", "N/A"
         encabezado_base64, carga_util_base64, firma = re_.split(".")
+
         re_1 = base64.urlsafe_b64decode(
             carga_util_base64 + "=" * (4 - len(carga_util_base64) % 4)
         ).decode("utf-8")

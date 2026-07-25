@@ -52,7 +52,11 @@ async def ass_(client: Client, m: Message):
     msg = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, response, vbv = await ass(cc, mes, ano, cvv)
+    try:
+        status, response, vbv = await ass(cc, mes, ano, cvv)
+    except Exception as e:
+        status, response, vbv = "Declined ❌", f"Error: {type(e).__name__}", "N/A"
+
 
     final = perf_counter() - ini
     with Database() as db:
