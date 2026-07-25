@@ -96,11 +96,16 @@ async def autoshopify(
                 cl = checkout_request.headers.get("Content-Language")
                 checkout_text = checkout_request.text
 
-                url_checkout = checkout_request.url
-
                 url_checkout_str = str(url_checkout)
                 if "/c/" in url_checkout_str or "/cn/" in url_checkout_str:
-                    raise Exception("graphql")
+
+                    return {
+                        "status": "DECLINED ❌",
+                        "response": "GraphQL Checkout Required (Try .kr, .hi, .sn)",
+                        "total": "1.00",
+                        "time": f"{round(perf_counter() - ini, 2)}",
+                    }
+
 
                 first_token = generate_random_string(86)
 

@@ -49,7 +49,8 @@ async def autosh_cmd(client: Client, m: Message):
         )
 
     # Check if custom URL site is passed before CC
-    site = "https://shoepalace.com"
+    site = "https://morphe.com"
+
     parts = text.split()
     for part in parts:
         if "." in part and not any(char in part for char in ["|", "/", ":"]) and not part.replace(".", "").isdigit():
