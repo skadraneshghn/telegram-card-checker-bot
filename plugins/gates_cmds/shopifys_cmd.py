@@ -105,7 +105,8 @@ async def shopifys(client: Client, m: Message):
     if isinstance(result, Exception):
         e = result
         traceback.print_exception(type(e), e, e.__traceback__)
-        return await msg_to_edit.edit(f"<b>Error!</b>")
+        return await msg_to_edit.edit(f"<b>Error! (<code>{type(e).__name__}: {str(e)[:100]}</code>)</b>")
+
 
     result = (
         result

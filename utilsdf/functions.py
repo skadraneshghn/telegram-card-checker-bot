@@ -451,25 +451,47 @@ def random_email() -> str:
     ) + "@gmail.com"
 
 
-# refactorizar
-def random_proxy() -> dict:
-    with open("assets/proxies.txt") as a:
-        prox1 = f"{random.choice(a.read().splitlines()).strip()}:http"
+def random_proxy() -> dict | None:
+    try:
+        if not os.path.exists("assets/proxies.txt"):
+            return None
+        with open("assets/proxies.txt", "r", encoding="utf-8", errors="ignore") as a:
+            lines = [line.strip() for line in a.read().splitlines() if line.strip() and not line.strip().startswith("#")]
+        if not lines:
+            return None
+        prox1 = f"{random.choice(lines)}:http"
+        proxy_parts = prox1.split(":")
+        if len(proxy_parts) >= 4:
+            proxy = f"{proxy_parts[-1]}://{proxy_parts[2]}:{proxy_parts[3]}@{proxy_parts[0]}:{proxy_parts[1]}"
+        elif len(proxy_parts) >= 2:
+            proxy = f"http://{proxy_parts[0]}:{proxy_parts[1]}"
+        else:
+            return None
+        return {"http://": proxy, "https://": proxy}
+    except Exception:
+        return None
 
-    proxy_parts = prox1.split(":")
-    proxy = f"{proxy_parts[-1]}://{proxy_parts[2]}:{proxy_parts[3]}@{proxy_parts[0]}:{proxy_parts[1]}"
 
-    return {"http://": proxy, "https://": proxy}
+def random_proxy_sh() -> dict | None:
+    try:
+        if not os.path.exists("assets/proxies_sh.txt"):
+            return None
+        with open("assets/proxies_sh.txt", "r", encoding="utf-8", errors="ignore") as a:
+            lines = [line.strip() for line in a.read().splitlines() if line.strip() and not line.strip().startswith("#")]
+        if not lines:
+            return None
+        prox1 = f"{random.choice(lines)}:http"
+        proxy_parts = prox1.split(":")
+        if len(proxy_parts) >= 4:
+            proxy = f"{proxy_parts[-1]}://{proxy_parts[2]}:{proxy_parts[3]}@{proxy_parts[0]}:{proxy_parts[1]}"
+        elif len(proxy_parts) >= 2:
+            proxy = f"http://{proxy_parts[0]}:{proxy_parts[1]}"
+        else:
+            return None
+        return {"http://": proxy, "https://": proxy}
+    except Exception:
+        return None
 
-
-def random_proxy_sh() -> dict:
-    with open("assets/proxies_sh.txt") as a:
-        prox1 = f"{random.choice(a.read().splitlines()).strip()}:http"
-
-    proxy_parts = prox1.split(":")
-    proxy = f"{proxy_parts[-1]}://{proxy_parts[2]}:{proxy_parts[3]}@{proxy_parts[0]}:{proxy_parts[1]}"
-
-    return {"http://": proxy, "https://": proxy}
 
 
 async def user_not_premium(m: Message) -> Message:

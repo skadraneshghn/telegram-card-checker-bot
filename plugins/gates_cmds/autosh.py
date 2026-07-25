@@ -71,7 +71,8 @@ async def autosh_cmd(client: Client, m: Message):
         response = await autoshopify(site, cc, mes, ano, cvv, is_premium, credits)
     except Exception as e:
         traceback.print_exc()
-        return await msg_to_edit.edit(f"<b>خطا در پردازش درگاه!</b>")
+        return await msg_to_edit.edit(f"<b>خطا در پردازش درگاه! (<code>{type(e).__name__}: {str(e)[:100]}</code>)</b>")
+
 
     if not response or not isinstance(response, dict):
         return await msg_to_edit.edit("<b>پاسخی از درگاه دریافت نشد!</b>")
