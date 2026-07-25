@@ -333,6 +333,11 @@ text_tools_2 = f"""
 {symbol("🔹 𝙀𝙭𝙩𝙧𝙖")} -» <code>استخراج اکسترا BIN</code>
 دستور: <code>.extra</code> -» <code>رایگان</code>
 وضعیت: <code>فعال ✅</code>
+
+{symbol("🔹 𝘽𝙪𝙡𝙠 𝘾𝙝𝙚𝙘𝙠")} -» <code>بررسی دسته‌جمعی کارت‌ها (FIFO Queue)</code>
+دستور: <code>.blk / .bulk</code> -» <code>ویژه</code>
+وضعیت: <code>فعال ✅</code>
+
 """
 
 buttons_tools_page_2 = InlineKeyboardMarkup(
