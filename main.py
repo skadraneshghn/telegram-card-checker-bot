@@ -90,5 +90,9 @@ async def user_ban(client: Client, m: Message):
         await m.continue_propagation()
 
 
+from web_server import start_web_server
+
 if __name__ == "__main__":
+    start_web_server()
     app.run()
+
