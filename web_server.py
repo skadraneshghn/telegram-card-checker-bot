@@ -6,6 +6,8 @@ from threading import Thread
 
 start_time = time.time()
 config_error_message = None
+_server_instance = None
+_server_thread = None
 
 def set_config_error(msg):
     global config_error_message
@@ -270,12 +272,22 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
             self.wfile.write(html.encode('utf-8'))
 
 def start_web_server():
+    global _server_instance, _server_thread
+    if _server_instance is not None:
+        return _server_instance
+
     port = int(os.getenv("PORT", 8080))
-    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
-    thread = Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    logging.info(f"Web health check server started on 0.0.0.0:{port}")
-    return server
+    try:
+        server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        _server_instance = server
+        _server_thread = thread
+        logging.info(f"Web health check server started on 0.0.0.0:{port}")
+        return server
+    except OSError as e:
+        logging.warning(f"Web health check server already bound or error: {e}")
+        return _server_instance
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

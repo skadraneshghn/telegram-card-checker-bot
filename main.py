@@ -1,7 +1,12 @@
+import sys
 import os
 import time
 import logging
 from os import getenv
+
+# Register sys.modules['main'] so plugins doing 'from main import ...' don't re-run main.py
+if __name__ == "__main__":
+    sys.modules["main"] = sys.modules[__name__]
 
 try:
     from dotenv import load_dotenv
@@ -9,14 +14,12 @@ try:
 except ImportError:
     pass
 
-# Start HTTP health check server FIRST on port 8080 for Clever Cloud
 from web_server import start_web_server, set_config_error
-start_web_server()
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.CRITICAL)
 
-# Validate credentials safely to prevent startup crash on missing/placeholder env vars
+# Validate credentials safely
 raw_api_id = getenv('TELEGRAM_API_ID', '').strip()
 raw_api_hash = getenv('TELEGRAM_API_HASH', '').strip()
 raw_bot_token = getenv('TELEGRAM_BOT_TOKEN', '').strip()
@@ -36,17 +39,6 @@ if not raw_api_hash or raw_api_hash == 'YOUR_API_HASH':
 if not raw_bot_token or raw_bot_token == 'YOUR_BOT_TOKEN':
     missing_fields.append("TELEGRAM_BOT_TOKEN")
 
-if missing_fields:
-    err_msg = f"Missing or invalid environment variables: {', '.join(missing_fields)}. Please configure them in your Clever Cloud Environment Variables dashboard."
-    logging.warning("=" * 60)
-    logging.warning("⚠️  " + err_msg)
-    logging.warning("Web health check server on port 8080 will stay alive so Clever Cloud deployment succeeds.")
-    logging.warning("=" * 60)
-    set_config_error(err_msg)
-    # Sleep to keep web server alive for Clever Cloud health check probe
-    while True:
-        time.sleep(10)
-
 from huepy import bad
 from pyromod import Client
 from pyrogram import filters
@@ -65,7 +57,6 @@ app = Client(
     parse_mode=ParseMode.HTML,
 )
 
-bot_on()
 
 @app.on_callback_query()
 async def warn_user(client: Client, callback_query: CallbackQuery):
@@ -121,4 +112,17 @@ async def user_ban(client: Client, m: Message):
 
 
 if __name__ == "__main__":
-    app.run()
+    start_web_server()
+
+    if missing_fields:
+        err_msg = f"Missing or invalid environment variables: {', '.join(missing_fields)}. Please configure them in your Clever Cloud Environment Variables dashboard."
+        logging.warning("=" * 60)
+        logging.warning("⚠️  " + err_msg)
+        logging.warning("Web health check server on port 8080 will stay alive so Clever Cloud deployment succeeds.")
+        logging.warning("=" * 60)
+        set_config_error(err_msg)
+        while True:
+            time.sleep(10)
+    else:
+        bot_on()
+        app.run()
