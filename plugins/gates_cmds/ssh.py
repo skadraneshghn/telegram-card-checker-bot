@@ -31,23 +31,27 @@ async def ssh(client: Client, m: Message):
     ini = perf_counter()
 
     msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
-    (
-        status,
-        msg,
-        ip,
-        host,
-        us,
-        ps,
-        exp,
-        limit,
-        server,
-        ssh_,
-        ssl,
-        websocket,
-        direct,
-        key_dns,
-        ns_dns,
-    ) = await ssh(us, ps, s)
+    try:
+        (
+            status,
+            msg,
+            ip,
+            host,
+            us,
+            ps,
+            exp,
+            limit,
+            server,
+            ssh_,
+            ssl,
+            websocket,
+            direct,
+            key_dns,
+            ns_dns,
+        ) = await ssh(us, ps, s)
+    except Exception as e:
+        return await msg_to_edit.edit(f"<b>Error: {type(e).__name__}</b>")
+
 
     final = perf_counter() - ini
 

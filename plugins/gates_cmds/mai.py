@@ -52,7 +52,11 @@ async def mai_(client: Client, m: Message):
     msg = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, response,  = await mai(cc, mes, ano, cvv)
+    try:
+        status, response = await mai(cc, mes, ano, cvv)
+    except Exception as e:
+        status, response = "Dead! ❌", f"Error: {type(e).__name__}"
+
 
     final = perf_counter() - ini
     with Database() as db:

@@ -15,7 +15,7 @@ from gates.devilsx import devilsx
 from time import perf_counter
 
 
-@Client.on_message(filters.command("dx", PREFIXES))
+@Client.on_message(filters.command(["dx", "devilsx"], PREFIXES))
 async def dx(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -52,7 +52,11 @@ async def dx(client: Client, m: Message):
     msg = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, response = await devilsx(cc, mes, ano, cvv)
+    try:
+        status, response = await devilsx(cc, mes, ano, cvv)
+    except Exception as e:
+        status, response = "Dead! ❌", f"Error: {type(e).__name__}"
+
 
     final = perf_counter() - ini
     with Database() as db:

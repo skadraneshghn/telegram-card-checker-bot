@@ -14,7 +14,7 @@ from gates.astharoth import astharoth
 from time import perf_counter
 
 
-@Client.on_message(filters.command("at", PREFIXES))
+@Client.on_message(filters.command(["at", "astharoth"], PREFIXES))
 async def at(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -69,7 +69,11 @@ async def at(client: Client, m: Message):
     msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, status1 = await astharoth(cc, mes, ano, cvv)
+    try:
+        status, status1 = await astharoth(cc, mes, ano, cvv)
+    except Exception as e:
+        status, status1 = "Dead! ❌", f"Error: {type(e).__name__}"
+
 
     final = perf_counter() - ini
     with Database() as db:

@@ -146,8 +146,9 @@ text_gates_charged = f"""
 وضعیت: <code>فعال ✅</code>
 
 {symbol("🔹 𝘼𝙠𝙩𝙯")} -» <code>Stripe -» $1.00</code>
-دستور: <code>.ak</code> -» <code>ویژه</code>
+دستور: <code>.ak / .aktz</code> -» <code>ویژه</code>
 وضعیت: <code>فعال ✅</code>
+
 """
 
 buttons_charged_page_1 = InlineKeyboardMarkup(

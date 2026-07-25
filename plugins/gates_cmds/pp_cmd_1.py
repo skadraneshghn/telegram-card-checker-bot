@@ -16,8 +16,8 @@ from time import perf_counter
 price = "$1"
 
 
-@Client.on_message(filters.command("ppa", PREFIXES))
-async def pp_cmd_1(client: Client, m: Message):
+@Client.on_message(filters.command(["ppa", "paypala"], PREFIXES))
+async def ppa_cmd(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
         if not db.is_authorized(user_id, m.chat.id):
@@ -35,7 +35,7 @@ async def pp_cmd_1(client: Client, m: Message):
     ccs = get_cc(text)
     if not ccs:
         return await m.reply(
-            f"𝙂𝙖𝙩𝙚𝙬𝙖𝙮 <code>𝙋𝙖𝙮𝙋𝙖𝙡 ♻️ -» {price}</code>\n𝙁𝙤𝙧𝙢𝙖𝙩 -» <code>/pp1 cc|month|year|cvc</code>",
+            f"𝙂𝙖𝙩𝙚𝙬𝙖𝙮 <code>𝙋𝙖𝙮𝙋𝙖𝙡 A ♻️ -» {price}</code>\n𝙁𝙤𝙧𝙢𝙖𝙩 -» <code>/ppa cc|month|year|cvc</code>",
             quote=True,
         )
     ini = perf_counter()
@@ -54,7 +54,11 @@ async def pp_cmd_1(client: Client, m: Message):
     msg = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    message_error, code_error = await pp_gate(cc, mes, ano, cvv)
+    try:
+        message_error, code_error = await pp_gate(cc, mes, ano, cvv)
+    except Exception as e:
+        message_error, code_error = f"Error: {type(e).__name__}", "Gateway Error"
+
     response_to_check = message_error.lower()
     status = "Dead! ❌"
     status1 = f"{code_error} -» {message_error}"

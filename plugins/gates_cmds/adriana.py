@@ -15,7 +15,7 @@ from gates.adriana import adriana
 from time import perf_counter
 
 
-@Client.on_message(filters.command("adr", PREFIXES))
+@Client.on_message(filters.command(["adr", "adriana"], PREFIXES))
 async def adr(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -52,7 +52,11 @@ async def adr(client: Client, m: Message):
     msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, result = await adriana(cc, mes, ano, cvv)
+    try:
+        status, result = await adriana(cc, mes, ano, cvv)
+    except Exception as e:
+        status, result = "Dead! ❌", f"Error: {type(e).__name__}"
+
 
     final = perf_counter() - ini
     with Database() as db:

@@ -15,7 +15,8 @@ from gates.aktz import stripe_gate
 from time import perf_counter
 
 
-@Client.on_message(filters.command("ak", PREFIXES))
+@Client.on_message(filters.command(["ak", "aktz"], PREFIXES))
+
 async def aktz(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:

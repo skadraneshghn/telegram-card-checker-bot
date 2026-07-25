@@ -16,7 +16,7 @@ from time import perf_counter
 price = "$0.01"
 
 
-@Client.on_message(filters.command("pp", PREFIXES))
+@Client.on_message(filters.command(["pp", "paypal"], PREFIXES))
 async def pp_cmd(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -54,7 +54,11 @@ async def pp_cmd(client: Client, m: Message):
     msg = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    message_error, code_error = await pp_gate(cc, mes, ano, cvv)
+    try:
+        message_error, code_error = await pp_gate(cc, mes, ano, cvv)
+    except Exception as e:
+        message_error, code_error = f"Error: {type(e).__name__}", "Gateway Error"
+
     response_to_check = message_error.lower()
     status = "Dead! ❌"
     status1 = f"{code_error} -» {message_error}"

@@ -15,7 +15,8 @@ from gates.boruto import boruto
 from time import perf_counter
 
 
-@Client.on_message(filters.command("bo", PREFIXES))
+@Client.on_message(filters.command(["bo", "boruto"], PREFIXES))
+
 async def bo(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:

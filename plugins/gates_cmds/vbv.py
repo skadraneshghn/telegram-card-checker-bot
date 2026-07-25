@@ -69,7 +69,11 @@ async def vbv_2(client: Client, m: Message):
     msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, status1 = await vbv(cc, mes, ano, cvv)
+    try:
+        status, status1 = await vbv(cc, mes, ano, cvv)
+    except Exception as e:
+        status, status1 = "Dead! ❌", f"Error: {type(e).__name__}"
+
     print(f"{cc}|{mes}|{ano}|{cvv} - @{m.from_user.username}")
 
     final = perf_counter() - ini

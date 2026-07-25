@@ -14,7 +14,7 @@ from utilsdf.vars import PREFIXES
 from time import perf_counter
 
 
-@Client.on_message(filters.command("ps", PREFIXES))
+@Client.on_message(filters.command(["ps", "pussy"], PREFIXES))
 async def ps(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -46,7 +46,11 @@ async def ps(client: Client, m: Message):
     msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, result = await b3_wc(cc, mes, ano, cvv, "podolskacoaching.com")
+    try:
+        status, result = await b3_wc(cc, mes, ano, cvv, "podolskacoaching.com")
+    except Exception as e:
+        status, result = "Dead! ❌", f"Error: {type(e).__name__}"
+
 
     final = perf_counter() - ini
     with Database() as db:

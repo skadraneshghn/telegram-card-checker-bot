@@ -17,7 +17,8 @@ from time import perf_counter
 from httpx import AsyncClient
 
 
-@Client.on_message(filters.command("it", PREFIXES))
+@Client.on_message(filters.command(["it", "itachi"], PREFIXES))
+
 async def itachi_cmd(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:

@@ -15,7 +15,8 @@ from gates.zukesito import zukesito
 from time import perf_counter
 
 
-@Client.on_message(filters.command("zu", PREFIXES))
+@Client.on_message(filters.command(["zu", "zukesito"], PREFIXES))
+
 async def zu(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:

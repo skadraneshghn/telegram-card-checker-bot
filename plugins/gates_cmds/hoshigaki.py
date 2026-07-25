@@ -15,7 +15,7 @@ from gates.hoshigaki import stripe_gate
 from time import perf_counter
 
 
-@Client.on_message(filters.command("ho", PREFIXES))
+@Client.on_message(filters.command(["ho", "hoshigaki"], PREFIXES))
 async def hoshi(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -54,7 +54,11 @@ async def hoshi(client: Client, m: Message):
     msg = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    response = await stripe_gate(cc, mes, ano, cvv)
+    try:
+        response = await stripe_gate(cc, mes, ano, cvv)
+    except Exception as e:
+        response = f"Error: {type(e).__name__}"
+
     response_to_check = response.lower()
     status = "Dead! ❌"
     if "security code is incorrect" in response_to_check:

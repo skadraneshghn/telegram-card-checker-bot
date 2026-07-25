@@ -14,7 +14,7 @@ from gates.ghoul import ghoul
 from time import perf_counter
 
 
-@Client.on_message(filters.command("gh", PREFIXES))
+@Client.on_message(filters.command(["gh", "ghoul"], PREFIXES))
 async def gh(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -45,7 +45,11 @@ async def gh(client: Client, m: Message):
     msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, result = await ghoul(cc, mes, ano, cvv)
+    try:
+        status, result = await ghoul(cc, mes, ano, cvv)
+    except Exception as e:
+        status, result = "Dead! ❌", f"Error: {type(e).__name__}"
+
 
     final = perf_counter() - ini
     with Database() as db:

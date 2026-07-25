@@ -15,7 +15,7 @@ from gates.hinata import hinata
 from time import perf_counter
 
 
-@Client.on_message(filters.command("hn", PREFIXES))
+@Client.on_message(filters.command(["hn", "hinata"], PREFIXES))
 async def hn(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -33,7 +33,7 @@ async def hn(client: Client, m: Message):
     ccs = get_cc(text)
     if not ccs:
         return await m.reply(
-            "𝙂𝙖𝙩𝙚𝙬𝙖𝙮 <code>𝙃𝙞𝙣𝙖𝙩𝙖 ♻️ -» $20</code>\n𝙁𝙤𝙧𝙢𝙖𝙩 -» <code>/hn cc|month|year|cvc</code>",
+            "𝙂𝙖𝙩𝙚𝙬𝙖𝙮 <code>𝙃𝙞𝙣𝙖𝙩𝙖  ♻️ -» $1.00</code>\n𝙁𝙤𝙧𝙢𝙖𝙩 -» <code>/hn cc|month|year|cvc</code>",
             quote=True,
         )
     ini = perf_counter()
@@ -49,10 +49,14 @@ async def hn(client: Client, m: Message):
         return await m.reply(
             f"𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩... -» <code>{antispam_result}'s</code>", quote=True
         )
-    msg = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
+    msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
 
-    status, response = await hinata(cc, mes, ano, cvv)
+    try:
+        status, result = await hinata(cc, mes, ano, cvv)
+    except Exception as e:
+        status, result = "Dead! ❌", f"Error: {type(e).__name__}"
+
 
     final = perf_counter() - ini
     with Database() as db:

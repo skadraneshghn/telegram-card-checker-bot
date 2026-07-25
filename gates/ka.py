@@ -63,12 +63,12 @@ async def ka(cc, month, year, cvv):
         t33 = clean_text(t3)
         aq_1 = capture(t33, "Answer This Question ? ", " +")
         aq_2 = capture(t33, f"Answer This Question ? {aq_1} + ", " CustomConfirmOrder")
-        if aq_1 == None:
+        if not aq_1 or not aq_1.isdigit():
             aq_1 = "1"
+        if not aq_2 or not aq_2.isdigit():
             aq_2 = "1"
-        aq_1 = int(aq_1)
-        aq_2 = int(aq_2)
-        rq = aq_1 + aq_2
+        rq = int(aq_1) + int(aq_2)
+
 
         h4 = {
             "Host": "www.aleenes.com",

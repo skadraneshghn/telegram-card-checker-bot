@@ -14,7 +14,7 @@ from gates.ko import ko
 from time import perf_counter
 
 
-@Client.on_message(filters.command("ko", PREFIXES))
+@Client.on_message(filters.command(["ko", "komori", "konan"], PREFIXES))
 async def ko_cmd(client: Client, m: Message):
     user_id = m.from_user.id
     with Database() as db:
@@ -51,7 +51,11 @@ async def ko_cmd(client: Client, m: Message):
         )
     msg_to_edit = await m.reply("𝙋𝙡𝙚𝙖𝙨𝙚 𝙒𝙖𝙞𝙩...", quote=True)
     cc_formatted = f"{cc}|{mes}|{ano}|{cvv}"
-    result = await ko(cc, mes, ano, cvv)
+    try:
+        result = await ko(cc, mes, ano, cvv)
+    except Exception as e:
+        result = f"Error: {type(e).__name__}"
+
     if not isinstance(result, tuple):
         status = "Dead! ❌"
         status1 = result
