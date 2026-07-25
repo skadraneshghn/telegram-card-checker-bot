@@ -27,7 +27,8 @@ from gates.pp1 import pp_gate as pp_gate1
 
 from gates.rohee import rohee
 from gates.sebas import sebas
-from gates.sexo import sexo
+from gates.sexo import gate_sexo as sexo
+
 from gates.vbv import vbv
 from gates.zukesito import zukesito
 from gates.shopifys import get_response_gate, load_gates_data
