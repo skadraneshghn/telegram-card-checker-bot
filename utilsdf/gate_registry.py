@@ -35,14 +35,21 @@ from gates.shopifys import get_response_gate, load_gates_data
 
 
 # Dictionary of standalone custom gates
+async def run_autosh(cc, m, y, c):
+    return await autoshopify("https://morphe.com", cc, m, y, c, True, 100)
+
+async def run_dynamic_shopify(cc, m, y, c, command):
+    return await get_response_gate(command, cc, m, y, c, True, 100)
+
 GATEWAYS = {
     "autosh": {
         "name": "Auto Shopify",
         "category": "Shopify",
         "price": "Auto",
-        "func": lambda cc, m, y, c: autoshopify("https://morphe.com", cc, m, y, c, True, 100),
+        "func": run_autosh,
         "type": "dict",  # returns dict
     },
+
     "ak": {
         "name": "Aktz (Stripe)",
         "category": "Charged",
@@ -117,7 +124,7 @@ GATEWAYS = {
         "name": "Hoshigaki (Stripe)",
         "category": "Auth",
         "price": "$0.00",
-        "func": lambda cc, m, y, c: ("Approved! ✅" if "security code" in str(hoshigaki_gate(cc, m, y, c)).lower() else "Dead! ❌", "Check Completed"),
+        "func": hoshigaki_gate,
         "type": "tuple",
     },
     "ka": {
@@ -131,9 +138,10 @@ GATEWAYS = {
         "name": "Konan (Shopify)",
         "category": "Auth",
         "price": "$0.00",
-        "func": lambda cc, m, y, c: ("Approved! ✅" if "Approved" in str(ko(cc, m, y, c)) else "Dead! ❌", "Konan Result"),
+        "func": ko,
         "type": "tuple",
     },
+
     "lynx": {
         "name": "Lynx (Shopify)",
         "category": "Auth",
@@ -233,9 +241,10 @@ def get_all_gateways():
                     "name": f"{g['gate']} ({g['site']})",
                     "category": "Shopify",
                     "price": "Auto",
-                    "func": lambda cc, m, y, c, command=cmd: get_response_gate(command, cc, m, y, c, True, 100),
+                    "func": (lambda c_cmd=cmd: lambda cc, m, y, c: run_dynamic_shopify(cc, m, y, c, c_cmd))(),
                     "type": "string",
                 }
+
     except Exception:
         pass
     return all_gates
