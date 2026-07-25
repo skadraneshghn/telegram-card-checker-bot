@@ -94,10 +94,10 @@ async def autoshopify(
                 )
 
                 cl = checkout_request.headers.get("Content-Language")
-                checkout_text = checkout_request.text
-
+                url_checkout = checkout_request.url
                 url_checkout_str = str(url_checkout)
                 if "/c/" in url_checkout_str or "/cn/" in url_checkout_str:
+
 
                     return {
                         "status": "DECLINED ❌",
